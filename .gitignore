@@ -1,0 +1,35 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+
+# Environment variables
+.env
+.flaskenv
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*~
+.DS_Store
+
+# Databases
+*.sqlite3
+*.db
+
+# Logs
+*.log
+
+# FastAPI specific
+alembic/versions/
+alembic.ini
+
+.venv/
+.env
+.vscode/
