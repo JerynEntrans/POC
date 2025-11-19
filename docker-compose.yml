@@ -1,0 +1,67 @@
+version: "3.9"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: talonify-be-services-dev:latest
+    container_name: talonify-be-services
+    volumes:
+      - .:/code
+    ports:
+      - 5000:5000
+      - 5680:5680
+    env_file:
+      - .env
+    environment:
+      PYTHONPATH: /code
+    entrypoint: ["bash", "/code/scripts/docker-entrypoint.sh"]
+    depends_on:
+      - talonify-db-local
+      - flyway
+    networks:
+      - talonify-be-services-dev
+
+  talonify-db-local:
+    image: postgres:latest
+    container_name: talonify-db-local
+    restart: always
+    ports:
+      - 5432:5432
+    volumes:
+      - talonify_db_local:/var/lib/postgresql
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-local}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-test}
+      POSTGRES_DB: ${POSTGRES_DB:-talonify_db_local}
+    networks:
+      - talonify-be-services-dev
+  
+  flyway:
+    image: flyway/flyway:latest
+    entrypoint: ["bash", "/flyway/flyway-entrypoint.sh"]
+    volumes:
+      - ./scripts/flyway_migrations/sql:/flyway/sql
+      - ./scripts/flyway_migrations/flyway-entrypoint.sh:/flyway/flyway-entrypoint.sh
+      - flyway_status:/flyway_status
+    networks:
+      - talonify-be-services-dev
+    env_file:
+      - .env
+    environment:
+      RUN_MIGRATIONS: "1"
+    container_name: talonify-be-services-flyway
+    depends_on:
+      - talonify-db-local
+
+networks:
+  talonify-be-services-dev:
+    name: talonify-be-services-dev
+    driver: bridge
+
+volumes:
+  talonify_db_local:
+    name: talonify_db_local
+  flyway_status:
+    name: flyway_status

@@ -1,0 +1,13 @@
+APScheduler
+faker
+fastapi[standard]
+markdown2
+psycopg2-binary
+pyjwt
+python-jose
+requests
+sqlalchemy
+sqlmodel
+python-dotenv
+pytest
+pytest-html
