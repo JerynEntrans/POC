@@ -39,3 +39,35 @@ def create_provider(db: Session, provider: HRISProviderCreate):
             )
 
         raise e
+
+
+def get_active_provider(db: Session):
+    existing: HRISProvider = db.exec(
+        select(HRISProvider).where(HRISProvider.is_active.is_(True))).scalar_one_or_none()
+    return existing
+
+
+def get_provider_by_id(db: Session, provider_id: str):
+    existing: HRISProvider = db.exec(
+        select(HRISProvider).where(HRISProvider.id == provider_id)).scalar_one_or_none()
+    return existing
+
+
+def delete_provider(db: Session, provider_id: str):
+    existing: HRISProvider = db.exec(
+        select(HRISProvider).where(HRISProvider.id == provider_id)).scalar_one_or_none()
+    # Deactivate the provider instead of deleting
+    if existing:
+        existing.is_active = False
+        db.add(existing)
+        db.commit()
+        db.refresh(existing)
+        return existing
+    else:
+        raise HTTPException(
+            status_code=400,
+            detail={
+                "error": f"Provider with ID - {provider_id} does not exists",
+                "message": "Cannot delete non-existing provider."
+            }
+        )
