@@ -7,10 +7,18 @@ class BambooHRClient(BaseHRISClient):
         return {
             "first_name": "firstName",
             "last_name": "lastName",
-            "status": "status",
-            "job_title": "jobTitleName",
-            "employee_id": "employeeId",
+            "preferred_name": "preferredName",
+            "display_name": "displayName",
+            "job_title": "jobTitle",
+            "employee_id": "id",
             "location": "location",
+            "supervisor": "supervisor",
+            "department": "department",
+            "division": "division",
+            "work_email": "workEmail",
+            "work_phone": "workPhone",
+            "photo_url": "photoUrl",
+            "work_phone_extension": "workPhoneExtension",
         }
 
     def authenticate(self, provider):
@@ -38,7 +46,7 @@ class BambooHRClient(BaseHRISClient):
         employees = []
 
         # Start with initial URL or default endpoint
-        url = initial_url or f"{self.base_url}employees"
+        url = initial_url or f"{self.base_url}employees/directory"
 
         while url:
             r = requests.get(
@@ -52,8 +60,8 @@ class BambooHRClient(BaseHRISClient):
 
             # Collect data
             if isinstance(data, dict):
-                if "data" in data and isinstance(data["data"], list):
-                    employees.extend(data["data"])
+                if "employees" in data and isinstance(data["employees"], list):
+                    employees.extend(data["employees"])
 
                 # Pagination
                 next_url = data.get("links", {}).get("next")
