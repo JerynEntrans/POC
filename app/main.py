@@ -25,6 +25,7 @@ load_dotenv()
 # ⬇️ Routers import
 from app.api.routes import sync  # noqa: E402
 from app.api.routes import providers  # noqa: E402
+from app.api.routes import employees  # noqa: E402
 
 
 app = FastAPI(
@@ -81,6 +82,7 @@ app.openapi = custom_openapi
 # ✅ Routers include
 app.include_router(sync.router)
 app.include_router(providers.router)
+app.include_router(employees.router)
 
 
 # Serve custom docs with favicon
@@ -121,10 +123,10 @@ def health_check():
     }
 
 
-@app.on_event("startup")
-def startup_event():
-    run_sync_job()
-    start_scheduler()
+# @app.on_event("startup")
+# def startup_event():
+#     run_sync_job()
+#     start_scheduler()
 
 
 @app.get("/readme", response_class=HTMLResponse, summary="Brief html documentation")
