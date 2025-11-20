@@ -27,23 +27,37 @@ class BambooHRClient(BaseHRISClient):
             "Content-Type": "application/json"
         }
 
-    def transform(self, data, mapping):
-        data_to_transform = []
-        if data and isinstance(data, dict) and "data" in data:
-            data_to_transform = data["data"]
-
+    def transform(self, data_to_transform, mapping):
         return [{my: emp.get(their) for my, their in mapping.items()} for emp in data_to_transform if isinstance(emp, dict)]
 
-    def fetch_employees(self):
-        url = f"{self.base_url}employees"
+    def fetch_employees(self, initial_url=None):
+        """
+        Fetches employees from BambooHR API using pagination (`links.next`).
+        Returns a flat list of employee dicts.
+        """
+        employees = []
 
-        r = requests.get(
-            url,
-            auth=(self.api_key, "x"),
-            headers=self.headers
-        )
-        r.raise_for_status()
+        # Start with initial URL or default endpoint
+        url = initial_url or f"{self.base_url}employees"
 
-        data = r.json()
+        while url:
+            r = requests.get(
+                url,
+                auth=(self.api_key, "x"),
+                headers=self.headers
+            )
+            r.raise_for_status()
 
-        return data
+            data = r.json()
+
+            # Collect data
+            if isinstance(data, dict):
+                if "data" in data and isinstance(data["data"], list):
+                    employees.extend(data["data"])
+
+                # Pagination
+                next_url = data.get("links", {}).get("next")
+                url = next_url
+            else:
+                break
+        return employees
