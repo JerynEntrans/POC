@@ -6,18 +6,17 @@ class BaseHRISClient:
         raise NotImplementedError
 
     def transform(self, employee, mapping):
-        return {
-            my: employee.get(their)
-            for my, their in mapping.items()
-        }
+        raise NotImplementedError
 
-    def sync(self, provider, config):
-        self.authenticate(provider, config)
+    def sync(self, provider, config=None):
+        self.authenticate(provider)
 
         data = self.fetch_employees()
+        print(data)
 
-        mapping = config.get("field_mapping", {})
+        mapping = (config or {}).get("field_mapping") or self.get_mapping()
+        print(mapping)
 
-        transformed = [self.transform(emp, mapping) for emp in data]
+        transformed = self.transform(data, mapping)
 
         return transformed

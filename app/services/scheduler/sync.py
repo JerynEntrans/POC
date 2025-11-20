@@ -2,7 +2,7 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
 from sqlmodel import Session
 from app.core.database import engine
-from app.services.sync_service import get_active_provider, get_active_config, run_sync
+from app.services.sync_service import get_active_provider, run_sync
 
 scheduler = AsyncIOScheduler()
 
@@ -14,11 +14,7 @@ def run_sync_job():
         if not provider:
             return
 
-        config = get_active_config(db, provider.id)
-        if not config:
-            return
-
-        run_sync(db, provider, config)
+        run_sync(db, provider)
 
 
 def start_scheduler():

@@ -27,7 +27,7 @@ $$;
 CREATE TABLE IF NOT EXISTS hris_provider (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     type hris_type NOT NULL,
-    creds JSONB NOT NULL,
+    config JSONB NOT NULL,
 
     is_active BOOLEAN NOT NULL DEFAULT TRUE,
 
@@ -41,24 +41,24 @@ ON hris_provider ((is_active))
 WHERE is_active = TRUE;
 
 
--- =========================================
--- 4. Create integration configuration table
--- =========================================
-CREATE TABLE IF NOT EXISTS integration_config (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    provider_id UUID NOT NULL REFERENCES hris_provider(id) ON DELETE CASCADE,
+-- -- =========================================
+-- -- 4. Create integration configuration table
+-- -- =========================================
+-- CREATE TABLE IF NOT EXISTS integration_config (
+--     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+--     provider_id UUID NOT NULL REFERENCES hris_provider(id) ON DELETE CASCADE,
 
-    config JSONB NOT NULL,
-    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+--     config JSONB NOT NULL,
+--     is_active BOOLEAN NOT NULL DEFAULT TRUE,
 
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
+--     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+--     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+-- );
 
--- Only one active config per provider
-CREATE UNIQUE INDEX IF NOT EXISTS unique_active_config_per_provider
-ON integration_config (provider_id)
-WHERE is_active = TRUE;
+-- -- Only one active config per provider
+-- CREATE UNIQUE INDEX IF NOT EXISTS unique_active_config_per_provider
+-- ON integration_config (provider_id)
+-- WHERE is_active = TRUE;
 
 
 -- =========================================
@@ -94,8 +94,8 @@ FOR EACH ROW
 EXECUTE FUNCTION update_timestamp();
 
 -- Integration config trigger
-DROP TRIGGER IF EXISTS trg_update_timestamp_config ON integration_config;
-CREATE TRIGGER trg_update_timestamp_config
-BEFORE UPDATE ON integration_config
-FOR EACH ROW
-EXECUTE FUNCTION update_timestamp();
+-- DROP TRIGGER IF EXISTS trg_update_timestamp_config ON integration_config;
+-- CREATE TRIGGER trg_update_timestamp_config
+-- BEFORE UPDATE ON integration_config
+-- FOR EACH ROW
+-- EXECUTE FUNCTION update_timestamp();

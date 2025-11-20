@@ -21,7 +21,7 @@ class HRISProvider(SQLModel, table=True):
 
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     type: HRISType
-    creds: dict = Field(sa_column=Column(JSON, nullable=False))
+    config: dict = Field(sa_column=Column(JSON, nullable=False))
 
     is_active: bool = True
 

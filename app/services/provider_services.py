@@ -10,7 +10,7 @@ from app.schemas.hris_provider import HRISProviderCreate
 def create_provider(db: Session, provider: HRISProviderCreate):
     new_provider = HRISProvider(
         type=provider.type,
-        creds=provider.creds,
+        config=provider.config.model_dump(mode="json"),
         is_active=True
     )
     db.add(new_provider)
